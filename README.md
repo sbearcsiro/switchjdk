@@ -2,9 +2,15 @@
 
 This is a Bash script for Mac users to switch JDK versions on the command line. I found myself dissatisfied with the built-in <code>/usr/libexec/java_home</code> and the otherwise highly refined [jenv](https://github.com/gcuisinier/jenv).
 
-Paste `switchjdk` into an executable path
+# Installation
 
-# Using it
+Paste the contents of `switchjdk-module.bash` into `~/.bash_profile`
+
+## Alternate Homebrew Install
+
+[See here](https://github.com/pcattori/homebrew-tap)
+
+# Using switchjdk
 
 1. You can do with JDK numbers (1.4 thru 1.9), or Java numbers (5 thru 9, err and '4' even though that was never released as that).
 2. The script chooses the highest minor version of the JDK to use (say JDK 1.5.1 over 1.5.0).
