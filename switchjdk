@@ -1,0 +1,112 @@
+#/bin/sh
+
+# Switch JDK versions for terminal (c) 2016, Paul Hammant
+
+quiet=0
+
+# A string with command options
+options=$@
+
+# An array with all the arguments
+arguments=($options)
+
+# Loop index
+index=0
+
+for argument in $options
+do
+    case $argument in
+        -q) quiet=1 ;;
+        --quiet) quiet=1 ;;
+        (*) ver="$(echo $argument | sed 's/^1\.//')" ;;
+     esac
+done
+
+if [ "$ver" -eq "$ver" ] 2>/dev/null; then
+    err=""
+    if [ $ver -lt 5 ] || [ $ver -gt 9 ]
+    then
+        err="JDK version should be between 5 and 9 (or 1.5 and 1.9)"
+    fi
+else
+    err="JDK version should be a number, was: $ver"
+fi
+
+if [ ! -z "$err" ]
+then
+    echo 'Usage: switchjdk [--quiet|-q] 4|5|6|7|8|9'
+    echo "$err"
+    exit 1
+fi
+
+jdk=""
+
+if [ "$ver" -gt 8 ] ; then
+    jdk="$(find /Library/Java/JavaVirtualMachines -name "jdk-${ver}*" | sort -r | head -n 1)/Contents/"
+    if [ "$jdk" = "/Contents/" ] ; then
+        echo "Requested JDK not found in expected location. Perhaps it is not installed."
+        exit 1
+    fi
+else
+    if [ "$ver" -gt 6 ] ; then
+        jdk="$(find /Library/Java/JavaVirtualMachines -name "jdk1.${ver}*" | sort -r | head -n 1)/Contents/"
+        if [ "$jdk" = "/Contents/" ] ; then
+            echo "Requested JDK not found in expected location. Perhaps it is not installed."
+            exit 1
+        fi
+    else
+        jdk="$(find /System/Library/Frameworks/JavaVM.framework/Versions -name "1.${ver}*" | sort -r | head -n 1)/"
+        if [ "$jdk" = "/" ] ; then
+            echo "Requested JDK not found in expected location. Perhaps it is not installed."
+            exit 1
+        fi
+        possiblyLinkedinToDiffJvm="$(ls -al $jdk | sed 's/^.*-> //' | perl -ne 'print $1 if /.*\/1\.([0-9]*).*/')"
+        if [ "$possiblyLinkedinToDiffJvm" -ne "$ver" ] ; then
+            echo "Requested JDK is not really installed. It is symlinked to JDK 1.$possiblyLinkedinToDiffJvm"
+            exit 1
+        fi
+    fi
+fi
+# sed chokes on newlines in the \n style, so give it a real newline.
+NL='
+'
+# Set JAVA_HOME env var
+eval "export JAVA_HOME=${jdk}Home"
+
+# Maven has a place where its JDK can be set.
+touch ~/.mavenrc
+mavenrc=$(cat ~/.mavenrc | sed '/Java.*\/Home/d')
+echo "export JAVA_HOME=${jdk}Home$NL$mavenrc" > ~/.mavenrc
+
+# Set PATH env var
+path=$(echo $PATH | sed "s/:/\\$NL/g" | sed '/Java.*\/Home\/bin/d' | tr '\n' ':' | sed s'/.$//')
+eval "export PATH=${jdk}Home/bin:$path"
+
+# Check Java version
+javaVersion="$(java -version 2>&1 | grep '^java version*' | perl -ne 'print $1 if /.*\"1\.([0-9]*).*/')"
+if [ "$ver" -gt 8 ] ; then
+    javaVersion="$(java -version 2>&1 | grep '^java version*' | sed 's/java version \"//' | sed 's/-ea\"//')"
+fi
+
+if [ "$javaVersion" != "$ver" ] ; then
+    echo "Requested JDK is not really installed. Was seemingly OK, up until getting 'java -version' to report the version installed."
+    exit 1
+fi
+
+# Check Javac version
+javacVersion="$(javac -version 2>&1 | grep '^javac *' | perl -ne 'print $1 if /.*1\.([0-9]*).*/')"
+if [ "$ver" -gt 8 ] ; then
+    javacVersion="$(javac -version 2>&1 | grep '^javac *' | sed 's/javac //' | sed 's/-ea//')"
+fi
+if [ "$javacVersion" != "$ver" ] ; then
+    echo "Requested JDK is not really installed. Was seemingly OK, up until getting 'javac -version' to report the version installed."
+    exit 1
+fi
+
+# satisfy end user that something was done
+if [ $quiet -eq "0" ]
+then
+    echo "JDK 1.$ver: JAVA_HOME and PATH changed for this terminal (and subprocesses)."
+fi
+
+exit 0
