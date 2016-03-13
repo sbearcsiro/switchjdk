@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 # Switch JDK versions for terminal (c) 2016, Paul Hammant
 
