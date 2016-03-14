@@ -15,8 +15,14 @@ JDK 1.7: JAVA_HOME and PATH changed for this terminal (and subprocesses).
 2. The script chooses the highest minor version of the JDK to use (say JDK 1.5.1 over 1.5.0). At the time of writing 9 is early access only, and I don't know what the numbers will look like for th real release until closer to that moment.
 3. There's a `--quiet` or `-q` argument that stops it doing the final line.
 4. Regardless of whether you have Maven installed or not, switchjdk modifies the tiny `~/.maven_rc` file appropriately.
-4. I've not done any work for the OpenJDK varients of Java (Pull Requests accepted).
-5. There's an attempt to verify the outcomes, and fast fail if it didn't work.  E.g. `switchjdk 5` on a new Mac will tell you that JDK 1.5 is really a symlink to JDK 6.
+5. The switchjdk command does not know about the OpenJDK varients of Java (Pull Requests accepted), just the Oracle and Apple ones.
+
+The switchjdk command attempts to verify the outcomes, and fast fail if things are not right.  E.g. `switchjdk 5` on a new Mac will tell you that JDK 1.5 is really a symlink to JDK 6:
+
+```
+$ switchjdk 5
+Requested JDK is not really installed. It is symlinked to JDK 1.6
+```
 
 Contributions welcome!
 
