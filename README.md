@@ -1,15 +1,21 @@
 # Bash script to switch JDK versions for Mac users
 
-This is a Bash script for Mac users to switch JDK versions on the command line. I found myself dissatisfied with the built-in <code>/usr/libexec/java_home</code> and the otherwise highly refined [jenv](https://github.com/gcuisinier/jenv).
+This is a Bash script for Mac users to switch JDK versions on the command line. I found myself dissatisfied with both the built-in <code>/usr/libexec/java_home</code> capability, as well as [jenv](https://github.com/gcuisinier/jenv) even though that the is highly refined.
 
-Paste `switchjdk` into an executable path
+Put the `switchjdk` command into an executable path.
 
 # Using it
 
-1. You can do with JDK numbers (1.4 thru 1.9), or Java numbers (5 thru 9, err and '4' even though that was never released as that).
-2. The script chooses the highest minor version of the JDK to use (say JDK 1.5.1 over 1.5.0).
-3. I've not done any work for the OpenJDK varients of Java.
-4. There's an attempt to verify the outcomes, and fast fail if it didn't work.  E.g. `switchjdk 5` on a new Mac will tell you that JDK 1.5 is really a symlink to JDK 6.
+```
+$ switchjdk 7
+JDK 1.7: JAVA_HOME and PATH changed for this terminal (and subprocesses).
+```
+
+1. You can do with JDK numbers (1.4 thru 1.9), or Java numbers (5 thru 9).
+2. The script chooses the highest minor version of the JDK to use (say JDK 1.5.1 over 1.5.0). At the time of writing 9 is early access only, and I don't know what the numbers will look like for th real release until closer to that moment.
+3. There's a `--qiuet` or `-q` argument that stops it doing the final line.
+4. I've not done any work for the OpenJDK varients of Java (Pull Requests accepted).
+5. There's an attempt to verify the outcomes, and fast fail if it didn't work.  E.g. `switchjdk 5` on a new Mac will tell you that JDK 1.5 is really a symlink to JDK 6.
 
 Contributions welcome!
 
