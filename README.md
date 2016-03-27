@@ -4,7 +4,7 @@ This is a Bash profile function called `switchjdk` for Mac users to switch JDK v
 
 ## Rationale
 
-I found myself dissatisfied with both the built-in `usr/libexec/java_home` capability, as well as [jenv](https://github.com/gcuisinier/jenv) even though that otherwise is highly refined.
+I found myself dissatisfied with both the built-in `usr/libexec/java_home` capability, as well as [jenv](https://github.com/gcuisinier/jenv) even though that otherwise is highly refined. Principally this is because they do not do the right thing for Maven's `~/.maven_rc` file at the same time as switching the JDK.
 
 # Installation
 
