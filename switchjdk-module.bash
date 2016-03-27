@@ -1,11 +1,10 @@
 #!/bin/sh
 
-
-
 # Switch JDK versions for terminal (c) 2016, Paul Hammant
 function switchjdk {
 
     quiet=0
+    zulu=0
 
     # A string with command options
     options=$@
@@ -21,6 +20,7 @@ function switchjdk {
         case $argument in
             -q) quiet=1 ;;
             --quiet) quiet=1 ;;
+            zulu) zulu=1 ;;
             (*) ver="$(echo $argument | sed 's/^1\.//')" ;;
          esac
     done
@@ -37,15 +37,21 @@ function switchjdk {
 
     if [ ! -z "$err" ]
     then
-        echo 'Usage: switchjdk [--quiet|-q] 4|5|6|7|8|9'
+        echo 'Usage: switchjdk [--quiet|-q] [zulu] 4|5|6|7|8|9'
         echo "$err"
         return 1
     fi
 
+    if [ $zulu -eq "1" ]; then
+        pfx="zulu"
+    else
+        pfx="jdk"
+    fi
+
     jdk=""
 
-    if [ "$ver" -gt 8 ] ; then
-        jdk="$(find /Library/Java/JavaVirtualMachines -name "jdk-${ver}*" | sort -r | head -n 1)/Contents/"
+    if [ "$ver" -gt 8 ] || [ $zulu -eq "1" ] ; then
+        jdk="$(find /Library/Java/JavaVirtualMachines -name "${pfx}-${ver}*" | sort -r | head -n 1)/Contents/"
         if [ "$jdk" = "/Contents/" ] ; then
             echo "Requested JDK not found in expected location. Perhaps it is not installed."
             return 1
@@ -87,9 +93,10 @@ function switchjdk {
 
     eval "export PATH=${jdk}Home/bin:$path"
 
-    # Check Java version
-    javaVersion="$(java -version 2>&1 | grep '^java version*' | perl -ne 'print $1 if /.*\"1\.([0-9]*).*/')"
+    # Check Java version. 5-8 and zulu varients, first
+    javaVersion="$(java -version 2>&1 | grep -E '^java|openjdk version*' | perl -ne 'print $1 if /.*\"1\.([0-9]*).*/')"
     if [ "$ver" -gt 8 ] ; then
+        # Oracle 9-ea and above ..
         javaVersion="$(java -version 2>&1 | grep '^java version*' | sed 's/java version \"//' | sed 's/-ea\"//')"
     fi
 
@@ -111,7 +118,7 @@ function switchjdk {
     # satisfy end user that something was done
     if [ $quiet -eq "0" ]
     then
-        echo "JDK 1.$ver: JAVA_HOME and PATH changed for this terminal (and subprocesses)."
+        echo $(echo "$pfx" | tr '[z]' '[Z]') "1.$ver: JAVA_HOME and PATH changed for this terminal (and subprocesses)."
     fi
 
     return 0
