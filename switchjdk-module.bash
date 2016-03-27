@@ -96,7 +96,7 @@ function switchjdk {
     # Check Java version. 5-8 and zulu varients, first
     javaVersion="$(java -version 2>&1 | grep -E '^java|openjdk version*' | perl -ne 'print $1 if /.*\"1\.([0-9]*).*/')"
     if [ "$ver" -gt 8 ] ; then
-        # Oracle 9-ea and above ..
+        # Oracle 9 and above. "9-ea" is what Oracle 9 early access reports itself as. Odd...
         javaVersion="$(java -version 2>&1 | grep '^java version*' | sed 's/java version \"//' | sed 's/-ea\"//')"
     fi
 
