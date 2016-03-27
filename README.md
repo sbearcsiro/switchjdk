@@ -1,6 +1,6 @@
-# Bash script to switch JDK versions for Mac users
+# Bash profile function to switch JDK versions for Mac users
 
-This is a Bash script for Mac users to switch JDK versions on the command line. I found myself dissatisfied with both the built-in <code>/usr/libexec/java_home</code> capability, as well as [jenv](https://github.com/gcuisinier/jenv) even though that the is highly refined.
+This is a Bash profile function for Mac users to switch JDK versions on the command line. I found myself dissatisfied with both the built-in <code>/usr/libexec/java_home</code> capability, as well as [jenv](https://github.com/gcuisinier/jenv) even though that the is highly refined.
 
 # Installation
 
