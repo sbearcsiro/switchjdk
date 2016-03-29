@@ -12,7 +12,7 @@ Paste the contents of `switchjdk-module.bash` into `~/.bash_profile`
 
 ## Alternate Homebrew Install
 
-[See here](https://github.com/pcattori/homebrew-tap)
+[See here](https://github.com/paul-hammant/homebrew-tap)
 
 # Using switchjdk
 
