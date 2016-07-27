@@ -58,7 +58,13 @@ function switchjdk {
         fi
     else
         if [ "$ver" -gt 6 ] ; then
-            jdk="$(find /Library/Java/JavaVirtualMachines -name "jdk1.${ver}*" | sort -r | head -n 1)/Contents/"
+            choices="$(find /Library/Java/JavaVirtualMachines -name "jdk1.${ver}*")"
+            threeDigitMinorVersion=$(echo "$choices" | grep -E "_[0-9]{3}\.jdk" | wc -l | sed 's/ //g')
+            if [ "$threeDigitMinorVersion" -gt 0 ] ; then
+              # drop _01.jdk through _99.jdk
+              choices=$(echo "$choices" | grep -E "_[0-9]{3}\.jdk")
+            fi
+            jdk="$(echo "$choices" | sort -r | head -n 1)/Contents/"
             if [ "$jdk" = "/Contents/" ] ; then
                 echo "Requested JDK not found in expected location. Perhaps it is not installed."
                 return 1
@@ -79,6 +85,9 @@ function switchjdk {
     # sed chokes on newlines in the \n style, so give it a real newline.
     NL='
 '
+
+    # for development purposes:
+    # echo "jdk: ${jdk}"
 
     # Set JAVA_HOME env var
     eval "export JAVA_HOME=${jdk}Home"
@@ -123,3 +132,6 @@ function switchjdk {
 
     return 0
 }
+
+# for development purposes:
+# switchjdk $1

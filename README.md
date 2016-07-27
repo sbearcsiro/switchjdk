@@ -8,7 +8,9 @@ I found myself dissatisfied with both the built-in `usr/libexec/java_home` capab
 
 # Installation
 
-Paste the contents of `switchjdk-module.bash` into `~/.bash_profile`
+1. Copy `switchjdk-module.bash` to `/usr/local/etc/`
+2. Paste the contents of `switchjdk-module.bash` into `~/.bash_profile`
+3. Run `source ~/.bash_profile`
 
 ## Alternate Homebrew Install
 
