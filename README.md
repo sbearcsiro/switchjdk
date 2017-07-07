@@ -1,12 +1,12 @@
 # Bash profile function to switch JDK versions for Mac users
 
-This is a Bash profile function called `switchjdk` for Mac users to switch JDK versions on the command line. The `switchjdk` function changes `java`, `javac` and other JDK command for the terminal/shell, and subprocesses. It does not have an effect on things outside that particular terminal.
+This is a Bash profile function called `switchjdk` for Mac or Linux users to switch JDK versions on the command line. The `switchjdk` function changes `java`, `javac` and other JDK command for the terminal/shell, and subprocesses. It does not have an effect on things outside that particular terminal.
 
 ## Rationale
 
 I found myself dissatisfied with both the built-in `usr/libexec/java_home` capability, as well as [jenv](https://github.com/gcuisinier/jenv) even though that is otherwise highly refined. Principally this is because they do not do the right thing for Maven's `~/.maven_rc` file at the same time as switching the JDK.
 
-# Installation
+# OS X Installation
 
 ##  Install via Homebrew 
 
@@ -24,6 +24,13 @@ $ source ~/.bash_profile
 1. Copy `switchjdk-module.bash` to `/usr/local/etc/`
 2. Paste the contents of `switchjdk-module.bash` into `~/.bash_profile`
 3. Run `source ~/.bash_profile`
+
+# Ubuntu Installation
+
+Adapt as necessary for other distros
+
+1. Copy `switchjdk-module.bash` to `/etc/profile.d/switchjdk-module.sh`
+2. Restart shell or run `source /etc/profile.d/switchjdk-module.sh`
 
 # Using switchjdk
 

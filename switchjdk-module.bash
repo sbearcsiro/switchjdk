@@ -5,6 +5,7 @@ function switchjdk {
 
     quiet=0
     zulu=0
+    openjdk=0
 
     # A string with command options
     options=$@
@@ -21,6 +22,7 @@ function switchjdk {
             -q) quiet=1 ;;
             --quiet) quiet=1 ;;
             zulu) zulu=1 ;;
+            openjdk) openjdk=1 ;;
             (*) ver="$(echo $argument | sed 's/^1\.//')" ;;
          esac
     done
@@ -42,17 +44,47 @@ function switchjdk {
         return 1
     fi
 
+    # OS specific support.  $var _must_ be set to either true or false.
+    local darwin=false
+    local linux=false
+    case "`uname`" in
+    Darwin*) darwin=true;;
+    Linux*) linux=true;;
+    esac
+
+    local jdk_path
+    local jdk_suffix
+    local jdk_home_suffix
+    if $linux; then
+       jdk_path=/usr/lib/jvm
+       jdk_suffix=""
+       jdk_home_suffix=""
+       jdk_path_regex="\/usr\/lib\/jvm\/"
+    elif $darwin; then
+       jdk_path=/Library/Java/JavaVirtualMachines
+       jdk_suffix="/Contents/"
+       jdk_home_suffix="Home"
+       jdk_path_regex="Java.*\/Home"
+    else
+       echo 'Unsupported operating system'
+       return 1
+    fi
+
     if [ $zulu -eq "1" ]; then
         pfx="zulu"
     else
-        pfx="jdk"
+        if $linux; then
+            pfx="java"
+        else
+            pfx="jdk"
+        fi
     fi
 
     jdk=""
 
-    if [ "$ver" -gt 8 ] || [ $zulu -eq "1" ] ; then
-        jdk="$(find /Library/Java/JavaVirtualMachines -name "${pfx}-${ver}*" | sort --version-sort -r | head -n 1)/Contents/"
-        if [ "$jdk" = "/Contents/" ] ; then
+    if [ "$ver" -gt 8 ] || [ $zulu -eq "1" ] || $linux ; then
+        jdk="$(find ${jdk_path} -name "${pfx}-${ver}*" | sort --version-sort -r | head -n 1)${jdk_suffix}"
+        if [ "$jdk" = "${jdk_suffix}" ] ; then
             echo "Requested JDK not found in expected location. Perhaps it is not installed."
             return 1
         fi
@@ -90,17 +122,28 @@ function switchjdk {
     # echo "jdk: ${jdk}"
 
     # Set JAVA_HOME env var
-    eval "export JAVA_HOME=${jdk}Home"
+    eval "export JAVA_HOME=${jdk}${jdk_home_suffix}"
+    eval "export J2SDKDIR=${jdk}${jdk_home_suffix}"
+    eval "export J2REDIR=${jdk}${jdk_home_suffix}/jre"
+    eval "export DERBY_HOME=${jdk}${jdk_home_suffix}/db"
 
     # Maven has a place where its JDK can be set.
     touch ~/.mavenrc
-    mavenrc=$(cat ~/.mavenrc | sed '/Java.*\/Home/d')
-    echo "export JAVA_HOME=${jdk}Home$NL$mavenrc" > ~/.mavenrc
+    if $linux; then
+        mavenrc=$(cat ~/.mavenrc | sed '/\/usr\/lib\/jvm\//d')
+    else
+        mavenrc=$(cat ~/.mavenrc | sed '/Java.*\/Home/d')
+    fi
+    echo "export JAVA_HOME=${jdk}${jdk_home_suffix}$NL$mavenrc" > ~/.mavenrc
 
     # Set PATH env var
-    path=$(echo "$PATH" | sed "s/:/\\$NL/g" | sed '/Java.*\/Home\/bin/d' | tr '\n' ':' | sed s'/.$//')
+    if $linux; then
+        path=$(echo "$PATH" | sed "s/:/\\$NL/g" | sed '/\/usr\/lib\/jvm\//d' | tr '\n' ':' | sed s'/.$//')
+    else
+        path=$(echo "$PATH" | sed "s/:/\\$NL/g" | sed '/Java.*\/Home\/bin/d' | tr '\n' ':' | sed s'/.$//')
+    fi
 
-    eval "export PATH=${jdk}Home/bin:$path"
+    eval "export PATH=${jdk}${jdk_home_suffix}/bin:${jdk}${jdk_home_suffix}/db/bin:${jdk}${jdk_home_suffix}/jre/bin:$path"
 
     # Check Java version. 5-8 and zulu varients, first
     javaVersion="$(java -version 2>&1 | grep -E '^java|openjdk version*' | sed 's/\"1\.//' | sed 's/\-ea//' | sed 's/java//' | sed 's/openjdk//' | sed 's/version//' | sed 's/\"//g' | xargs | cut -d' ' -f1 | cut -d'.' -f1)"
