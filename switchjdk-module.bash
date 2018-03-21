@@ -27,9 +27,9 @@ function switchjdk {
 
     if [ "$ver" -eq "$ver" ] 2>/dev/null; then
         err=""
-        if [ $ver -lt 5 ] || [ $ver -gt 9 ]
+        if [ $ver -lt 5 ] || [ $ver -gt 11 ]
         then
-            err="JDK version should be between 5 and 9 (or 1.5 and 1.9)"
+            err="JDK version should be between 5 and 11 (or 1.5 and 1.11)"
         fi
     else
         err="JDK version should be a number, was: $ver"
@@ -37,7 +37,7 @@ function switchjdk {
 
     if [ ! -z "$err" ]
     then
-        echo 'Usage: switchjdk [--quiet|-q] [zulu] 4|5|6|7|8|9'
+        echo 'Usage: switchjdk [--quiet|-q] [zulu] 4|5|6|7|8|9|10|11'
         echo "$err"
         return 1
     fi
@@ -103,11 +103,7 @@ function switchjdk {
     eval "export PATH=${jdk}Home/bin:$path"
 
     # Check Java version. 5-8 and zulu varients, first
-    javaVersion="$(java -version 2>&1 | grep -E '^java|openjdk version*' | perl -ne 'print $1 if /.*\"1\.([0-9]*).*/')"
-    if [ "$ver" -gt 8 ] ; then
-        # Oracle 9 and above. "9-ea" is what Oracle 9 early access reports itself as. Odd...
-        javaVersion="$(java -version 2>&1 | grep '^java version*' | sed 's/java version \"//' | sed 's/-ea\"//')"
-    fi
+    javaVersion="$(java -version 2>&1 | grep -E '^java|openjdk version*' | sed 's/\"1\.//' | sed 's/java//' | sed 's/openjdk//' | sed 's/version//' | sed 's/\"//g' | xargs | cut -d' ' -f1 | cut -d'.' -f1)"
 
     if [ "$javaVersion" != "$ver" ] ; then
         echo "Requested JDK is not really installed. Was seemingly OK, up until getting 'java -version' to report the version installed."
@@ -115,10 +111,7 @@ function switchjdk {
     fi
 
     # Check Javac version
-    javacVersion="$(javac -version 2>&1 | grep '^javac *' | perl -ne 'print $1 if /.*1\.([0-9]*).*/')"
-    if [ "$ver" -gt 8 ] ; then
-        javacVersion="$(javac -version 2>&1 | grep '^javac *' | sed 's/javac //' | sed 's/-ea//')"
-    fi
+    javacVersion="$(javac -version 2>&1 | grep '^javac *' | sed 's/ 1\./ /' | cut -d' ' -f2 | cut -d'.' -f1)"
     if [ "$javacVersion" != "$ver" ] ; then
         echo "Requested JDK is not really installed. Was seemingly OK, up until getting 'javac -version' to report the version installed."
         return 1
