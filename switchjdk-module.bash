@@ -127,4 +127,5 @@ function switchjdk {
 }
 
 # for development purposes:
-# switchjdk $1
+# source ./switchjdk-module.bash
+# switchjdk 10
