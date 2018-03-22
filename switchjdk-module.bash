@@ -103,7 +103,7 @@ function switchjdk {
     eval "export PATH=${jdk}Home/bin:$path"
 
     # Check Java version. 5-8 and zulu varients, first
-    javaVersion="$(java -version 2>&1 | grep -E '^java|openjdk version*' | sed 's/\"1\.//' | sed 's/java//' | sed 's/openjdk//' | sed 's/version//' | sed 's/\"//g' | xargs | cut -d' ' -f1 | cut -d'.' -f1)"
+    javaVersion="$(java -version 2>&1 | grep -E '^java|openjdk version*' | sed 's/\"1\.//' | sed 's/\-ea//' | sed 's/java//' | sed 's/openjdk//' | sed 's/version//' | sed 's/\"//g' | xargs | cut -d' ' -f1 | cut -d'.' -f1)"
 
     if [ "$javaVersion" != "$ver" ] ; then
         echo "Requested JDK is not really installed. Was seemingly OK, up until getting 'java -version' to report the version installed."
@@ -111,7 +111,7 @@ function switchjdk {
     fi
 
     # Check Javac version
-    javacVersion="$(javac -version 2>&1 | grep '^javac *' | sed 's/ 1\./ /' | cut -d' ' -f2 | cut -d'.' -f1)"
+    javacVersion="$(javac -version 2>&1 | grep '^javac *' | sed 's/ 1\./ /' | sed 's/\-ea//' | cut -d' ' -f2 | cut -d'.' -f1)"
     if [ "$javacVersion" != "$ver" ] ; then
         echo "Requested JDK is not really installed. Was seemingly OK, up until getting 'javac -version' to report the version installed."
         return 1
