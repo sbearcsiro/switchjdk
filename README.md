@@ -4,17 +4,26 @@ This is a Bash profile function called `switchjdk` for Mac users to switch JDK v
 
 ## Rationale
 
-I found myself dissatisfied with both the built-in `usr/libexec/java_home` capability, as well as [jenv](https://github.com/gcuisinier/jenv) even though that otherwise is highly refined. Principally this is because they do not do the right thing for Maven's `~/.maven_rc` file at the same time as switching the JDK.
+I found myself dissatisfied with both the built-in `usr/libexec/java_home` capability, as well as [jenv](https://github.com/gcuisinier/jenv) even though that is otherwise highly refined. Principally this is because they do not do the right thing for Maven's `~/.maven_rc` file at the same time as switching the JDK.
 
 # Installation
+
+##  Install via Homebrew 
+
+[See here](https://github.com/paul-hammant/homebrew-tap)
+
+Quick install via Homebrew:
+
+```bash
+$ brew install paul-hammant/tap/switchjdk
+$ source ~/.bash_profile
+```
+
+## Install manually
 
 1. Copy `switchjdk-module.bash` to `/usr/local/etc/`
 2. Paste the contents of `switchjdk-module.bash` into `~/.bash_profile`
 3. Run `source ~/.bash_profile`
-
-## Alternate Homebrew Install
-
-[See here](https://github.com/paul-hammant/homebrew-tap)
 
 # Using switchjdk
 
@@ -24,14 +33,14 @@ JDK 1.7: JAVA_HOME and PATH changed for this terminal (and subprocesses).
 ```
 
 1. This only works on installed JDKs.
-2. You can do with JDK numbers (1.4 thru 1.9), or Java numbers (5 thru 9) - Oracle and Apple JDKs. Note 9 is presently 'early access'.
+2. You can do with JDK numbers (1.4 thru 1.11), or Java numbers (5 thru 11) - Oracle and Apple JDKs. Note 11 is presently 'early access'.
 3. You can also do 1.7 thru 1.8 (7 thru 8) for the [**Zulu** varient of the OpenJDK](http://www.azul.com/downloads/zulu/).
-4. The script chooses the highest minor version of the JDK to use (say JDK 1.5.1 over 1.5.0). At the time of writing 9 is early access only, and I don't know what the numbers will look like for the real release until closer to that moment.
+4. The script **chooses the highest minor version of the JDK** to use (say JDK 1.5.1 over 1.5.0). At the time of writing 11 is early access only, and I don't know what the numbers will look like for the real release until closer to that moment.
 5. There's a `--quiet` or `-q` argument that stops it doing the final line. Example below.
 6. Regardless of whether you have Maven installed or not, switchjdk modifies the tiny `~/.maven_rc` file appropriately.
-8. The switchjdk function does not know about other OpenJDK varients of the JDK (Pull Requests accepted), just the Oracle and Apple and Zulu ones.
+8. The switchjdk function does not know about other OpenJDK variants of the JDK (Pull Requests accepted), just the Oracle and Apple and Zulu ones.
 
-The switchjdk command attempts to verify the outcomes, and fast fail if things are not right.  E.g. `switchjdk 5` on a new Mac will tell you that JDK 1.5 is really a symlink to JDK 6:
+The switchjdk command attempts to verify the outcomes, and fast fail if things are not right.  E.g. `switchjdk 5` on a new Mac will tell you that JDK 1.5 is really a symlink to JDK 6, like so:
 
 ```
 $ switchjdk 5
@@ -63,6 +72,6 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# Contribtions
+# Contributions
 
 Contributions welcome!
