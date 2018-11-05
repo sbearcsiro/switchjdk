@@ -27,9 +27,9 @@ function switchjdk {
 
     if [ "$ver" -eq "$ver" ] 2>/dev/null; then
         err=""
-        if [ $ver -lt 5 ] || [ $ver -gt 11 ]
+        if [ $ver -lt 5 ] || [ $ver -gt 12 ]
         then
-            err="JDK version should be between 5 and 11 (or 1.5 and 1.11)"
+            err="JDK version should be between 5 and 12 (or 1.5 and 1.12)"
         fi
     else
         err="JDK version should be a number, was: $ver"
@@ -37,7 +37,7 @@ function switchjdk {
 
     if [ ! -z "$err" ]
     then
-        echo 'Usage: switchjdk [--quiet|-q] [zulu] 4|5|6|7|8|9|10|11'
+        echo 'Usage: switchjdk [--quiet|-q] [zulu] 4|5|6|7|8|9|10|11|12'
         echo "$err"
         return 1
     fi
@@ -51,7 +51,7 @@ function switchjdk {
     jdk=""
 
     if [ "$ver" -gt 8 ] || [ $zulu -eq "1" ] ; then
-        jdk="$(find /Library/Java/JavaVirtualMachines -name "${pfx}-${ver}*" | sort -r | head -n 1)/Contents/"
+        jdk="$(find /Library/Java/JavaVirtualMachines -name "${pfx}-${ver}*" | sort --version-sort -r | head -n 1)/Contents/"
         if [ "$jdk" = "/Contents/" ] ; then
             echo "Requested JDK not found in expected location. Perhaps it is not installed."
             return 1
@@ -64,13 +64,13 @@ function switchjdk {
               # drop _01.jdk through _99.jdk
               choices=$(echo "$choices" | grep -E "_[0-9]{3}\.jdk")
             fi
-            jdk="$(echo "$choices" | sort -r | head -n 1)/Contents/"
+            jdk="$(echo "$choices" | sort --version-sort -r | head -n 1)/Contents/"
             if [ "$jdk" = "/Contents/" ] ; then
                 echo "Requested JDK not found in expected location. Perhaps it is not installed."
                 return 1
             fi
         else
-            jdk="$(find /System/Library/Frameworks/JavaVM.framework/Versions -name "1.${ver}*" | sort -r | head -n 1)/"
+            jdk="$(find /System/Library/Frameworks/JavaVM.framework/Versions -name "1.${ver}*" | sort --version-sort -r | head -n 1)/"
             if [ "$jdk" = "/" ] ; then
                 echo "Requested JDK not found in expected location. Perhaps it is not installed."
                 return 1
