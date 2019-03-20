@@ -47,6 +47,15 @@ $ switchjdk 5
 Requested JDK is not really installed. It is symlinked to JDK 1.6
 ```
 
+# JDK 12 release (March 2019)
+
+Make sure you delete pre-release versions:
+
+```
+sudo rm -rf /Library/Java/JavaVirtualMachines/jdk-12-33.jdk
+# and others
+```
+
 ## Options
 
 ## --quiet
